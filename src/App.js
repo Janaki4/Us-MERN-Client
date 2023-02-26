@@ -1,34 +1,28 @@
 import React from 'react'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Home, Register, Login, ResetPassword, PageNotFound } from "./components"
-
-const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <Home />
-    },
-    {
-        path: "/register",
-        element: <Register />
-    },
-    {
-        path: "/login",
-        element: <Login />
-    },
-    {
-        path: "/resetpassword",
-        element: <ResetPassword />
-    }, {
-        path: "*",
-        element:<PageNotFound/>
-    }
-])
+import { createBrowserRouter, RouterProvider, BrowserRouter, Route, Routes } from 'react-router-dom'
+import {
+    Home, Register, Login, SharedLayout, PageNotFound,
+    CreateOrg, InviteEmployee, ProtectedRoute , Task
+} from "./components"
 
 const App = () => {
     return (
-        <div >
-            <RouterProvider router={router} />
-        </div>
+        <BrowserRouter>
+            <Routes>
+                <Route path='/' element={
+                    <ProtectedRoute>
+                        <SharedLayout />
+                    </ProtectedRoute>
+                }>
+                    <Route index element={<Task/>} />
+                    <Route path='create-org' element={<CreateOrg />} />
+                    <Route path="invite-employee" element={<InviteEmployee />} />
+                </Route>
+                <Route path='/register' element={<Register />} />
+                <Route path='/login' element={<Login />} />
+                <Route path='/landing' element={<Home />} />
+            </Routes>
+        </BrowserRouter>
     )
 }
 

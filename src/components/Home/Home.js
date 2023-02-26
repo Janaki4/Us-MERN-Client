@@ -7,7 +7,7 @@ const Home = () => {
         <div className='flex  justify-center items-center h-screen'>
             <Button primary rounded> <Link to="/register">Register</Link></Button>
             <Button primary rounded><Link to="/Login">Login</Link></Button>
-            <Button danger rounded ><Link to="/resetpassword">Reset Password</Link></Button>
+            <Button danger rounded ><Link to="/">Reset Password</Link></Button>
         </div>
     )
 }

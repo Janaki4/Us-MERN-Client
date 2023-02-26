@@ -1,18 +1,17 @@
 import React from "react";
 import Button from "../../Button/Button";
-import signUpValidate from "../../../validation/validate";
 import { Toaster } from "react-hot-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import Alert from "../Helpers/Alert";
-import { useSelector , useDispatch } from "react-redux";
-import { changeAlertState , updateAlertText , updateAlertType } from "../../../store";
+import { useSelector, useDispatch } from "react-redux";
+import { changeGlobalState } from "../../../store";
 
 
 const Register = () => {
     const dispatch = useDispatch()
-    const { showAlert } = useSelector(state => { 
+    const { showAlert, isLoading } = useSelector(state => {
         return state.global
     })
     // console.log(showAlert)
@@ -24,11 +23,11 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [contactNo, setContact_no] = useState("");
     // const [alert, setAlert] = useState(true)
-/**
- * dispatch(changeAlertState(true))
- * dispatch(updateAlertType)
- * dispatch(updateAlertText)
- */
+    /**
+     * dispatch(changeAlertState(true))
+     * dispatch(updateAlertType)
+     * dispatch(updateAlertText)
+     */
     const submitHandler = async (e) => {
         e.preventDefault();
         const userObj = {
@@ -39,60 +38,40 @@ const Register = () => {
             password: password,
             contact_no: contactNo,
         };
-        if (!userObj.first_name) {
-            dispatch(changeAlertState(true))
-            dispatch(updateAlertText("Pls enter first name"))
-            dispatch(updateAlertType("danger"))
+        if (!userObj.first_name || !userObj.last_name || !userObj.username || !userObj.email_id || !userObj.password || !userObj.contact_no) {
+            dispatch(changeGlobalState({
+                showAlert: true,
+                alertType: "error",
+                alertText: "Pls enter all values"
+            }))
         }
-        else if (!userObj.last_name) {
-            dispatch(changeAlertState(true))
-            dispatch(updateAlertText("Pls enter last name"))
-            dispatch(updateAlertType("danger"))
+        else {
+            dispatch(changeGlobalState({
+                isLoading: true,
+                showAlert: false
+            }))
+            try {
+                const response = await axios.post("/user/register", userObj)
+                const result = await response.data
+                console.log(result.data.email_id)
+                dispatch(changeGlobalState({
+                    showAlert: true,
+                    alertType: "success",
+                    alertText: "Registered Successfully . Redirecting to login..."
+                }))
+                navigate("/login")
+            } catch (error) {
+                dispatch(changeGlobalState({
+                    showAlert: true,
+                    alertType: "error",
+                    alertText: error.response.data.data.errors[0].message
+                }))
+            }
         }
-        else if (!userObj.username) {
-            dispatch(changeAlertState(true))
-            dispatch(updateAlertText("Pls enter user name"))
-            dispatch(updateAlertType("danger"))
-        }
-        else if (!userObj.email_id) {
-            dispatch(changeAlertState(true))
-            dispatch(updateAlertText("Pls enter email id"))
-            dispatch(updateAlertType("danger"))
-        }
-        else if (!userObj.password) {
-            dispatch(changeAlertState(true))
-            dispatch(updateAlertText("Pls enter password"))
-            dispatch(updateAlertType("danger"))
-        }
-        else if (!userObj.contact_no) {
-            dispatch(changeAlertState(true))
-            dispatch(updateAlertText("Pls enter contact no"))
-            dispatch(updateAlertType("danger"))
-        }
-        else { 
-            dispatch(changeAlertState(false))
-            dispatch(updateAlertText(""))
-            dispatch(updateAlertType(""))
-        }
-        console.log(userObj)
-        // const result = await axios.post("http://localhost:4000/api/v1/user/register",
-        //     userObj, {
-        //     headers: {
-        //         "Content-Type": "application/json"
-        //     }
-        // }).catch((er) => console.log(er))
-        // const finalResult = await result
-        // navigate("/login")
-        // console.log(finalResult)
-
-        // // axios
-        // // .post("/update-profile", formData, {
-        // //   headers: {
-        // //     "Content-Type": "multipart/form-data",
-        // //   },
-        // // })
     };
-
+    useEffect(() => {
+        dispatch(changeGlobalState({ showAlert: false }))
+    }, [])
     const formDivClass =
         "flex flex-col py-0.5 [&>*]:text-lg [&>label]:pb-1 [&>label]:text-gray-600 ";
     const inputStyle = "outline-0 rounded-md border-indigo-600 border bg-gray-200";
@@ -152,7 +131,7 @@ const Register = () => {
                         onChange={(e) => setContact_no(e.target.value)}
                     />
                 </div>
-                <Button primary rounded className="py-1 my-3">
+                <Button primary rounded className="py-1 my-3" >
                     Register
                 </Button>
                 <div className="flex flex-row space-x-3">

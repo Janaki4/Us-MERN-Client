@@ -9,23 +9,30 @@ const globalStateSlice = createSlice({
         alertText: ""
     },
     reducers: {
-        changeLoadingState(state, action) {
-            state.isLoading = action.payload
-        },
-        changeAlertState(state, action) {
-            state.showAlert = action.payload
-        },
-        updateAlertType(state, action) {
-            state.alertType = action.payload
-        },
-        updateAlertText(state, action) {
-            state.alertText = action.payload
+        // changeLoadingState(state, action) {
+        //     state.isLoading = action.payload
+        // },
+        // changeAlertState(state, action) {
+        //     state.showAlert = action.payload
+        // },
+        // updateAlertType(state, action) {
+        //     state.alertType = action.payload
+        // },
+        // updateAlertText(state, action) {
+        //     state.alertText = action.payload
+        // }
+        changeGlobalState(state, action) {
+            return {
+                ...state,
+                ...action.payload
+            }
         }
     }
 })
 
 
-export const { changeLoadingState, changeAlertState, updateAlertType, updateAlertText } = globalStateSlice.actions
+export const {  changeGlobalState } = globalStateSlice.actions
+// export const { changeLoadingState, changeAlertState, updateAlertType, updateAlertText , updateGlobalState } = globalStateSlice.actions
 export const globalReducer = globalStateSlice.reducer
 
 
